@@ -19,14 +19,17 @@ typedef struct two_stack_ {
    uint top_2;
 } two_stack;
 
+#define STACK_SIZE 10;
+
 static two_stack S;
+static uint A[STACK_SIZE];
 
 static void 
 two_stack_initialize (uint *A)
 {
     uint i;
     
-    for (i = 0; i < n; i++) {
+    for (i = 0; i < STACK_SIZE; i++) {
         A[i] = 0;
     }
     S.top_1 = 1;
