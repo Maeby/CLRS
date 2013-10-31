@@ -40,7 +40,7 @@ ENQUEUE (queue_t *queue, int *array, int x)
         return;
     }
     
-    if (queue->tail == QUEUE_SIZE) {
+    if (queue->tail == QUEUE_SIZE - 1) {
         queue->tail = 0;
     } else {
         queue_tail++;
@@ -64,7 +64,7 @@ DEQUEUE (queue_t *queue, int *array)
     }
     
     x = array[queue->head];
-    if (queue->head == QUEUE_SIZE) {
+    if (queue->head == QUEUE_SIZE - 1) {
         queue->head = 0;
     } else {
         queue->head++;
