@@ -1,0 +1,58 @@
+/*
+ * Author: Maeby Peng, MaebyPeng@gmail.com
+ * Date: Oct 31, 2013
+ * Update: Oct 31, 2013
+ * Problem: CRLS 10.1-6
+ * Difficulty: Easy
+ *
+ * Notes:
+ * Show how to implement a queue using two stacks. Analyze the running time of the queue operations.
+ * Keep 2 stacks, let's call them inbox and outbox.
+ *
+ * Queue: Push the new element onto inbox
+ *
+ * Dequeue: If outbox is empty, refill it by popping each element from inbox and pushing it onto outbox.
+ *          Pop and return the top element from outbox
+ */
+ 
+typedef struct stack_ {
+    uint top;
+} stack_t;
+
+#define QUEUE_SIZE 10
+
+static stack_t stack_input;
+static stack_t stack_output;
+static int array_input[QUEUE_SIZE];
+static int array_output[QUEUE_SIZE];
+
+void
+ENQUEUE (int x)
+{
+    if (stack_input.top == QUEUE_SIZE) {
+        printf("\nQueue Overflow");
+        return;
+    }
+    array[stack_input.top] = x;
+    stack_input.top++;
+}
+
+int 
+DEQUEUE (void)
+{
+    if (stack_output.top == 0 && stack_input.top == 0) {
+        printf("\nQueue underflow");
+        return (0);
+    }
+    /*
+     * If output stack is empty, pop each element from inbox and push it onto outbox
+     */
+    if (stack_output.top == 0) {
+        while (stack_input.top > 0) {
+             stack_input.top--;
+             array_output[stack_output.top] = array_input[stack_input.top];
+             stack_output.top++;
+        }
+    }
+    return (array_output[stack_output.top - 1]);
+}
