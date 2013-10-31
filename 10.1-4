@@ -1,0 +1,74 @@
+/*
+ * Author: Maeby Peng, MaebyPeng@gmail.com
+ * Date: Oct 31, 2013
+ * Update: Oct 31, 2013
+ * Problem: CRLS 10.1-4
+ * Difficulty: Easy
+ *
+ * Notes:
+ * Rewrite ENQUEUE and DEQUEUE to detect underflow and overflow of a queue.
+ */
+
+typedef struct queue_ {
+    uint head;
+    uint tail;
+    uint count;
+} queue_t;
+
+#define QUEUE_SIZE 10;
+
+static queue_t queue;
+static int array[QUEUE_SIZE]
+
+void
+queue_initialize (queue_t *Q)
+{
+    uint i;
+    
+    memset(array, 0, sizeof(int) * QUEUE_SIZE);
+    memset(queue, 0, sizeof(queue_t));
+}
+
+void
+ENQUEUE (queue_t *queue, int *array, int x)
+{
+    /*
+     * Check for overflow
+     */
+    if (queue->count == QUEUE_SIZE) {
+        printf("\nQueue Overflow");
+        return;
+    }
+    
+    if (queue->tail == QUEUE_SIZE) {
+        queue->tail = 0;
+    } else {
+        queue_tail++;
+    }
+
+    queue->count++;
+    array[queue->tail] = x;
+}
+
+int 
+DEQUEUE (queue_t *queue, int *array)
+{
+    int x;
+    
+    /*
+     * Check for underflow
+     */
+    if (queue->count == 0) {
+        printf("\nQueue Underflow");
+        return (0);
+    }
+    
+    x = array[queue->head];
+    if (queue->head == QUEUE_SIZE) {
+        queue->head = 0;
+    } else {
+        queue->head++;
+    }
+    queue->count--;
+    return (x);
+}
