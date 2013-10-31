@@ -1,0 +1,133 @@
+/*
+ * Author: Maeby Peng, MaebyPeng@gmail.com
+ * Date: Oct 31, 2013
+ * Update: Oct 31, 2013
+ * Problem: CRLS Chapter 10.2, SLL
+ * Difficulty: Easy
+ */
+
+typedef struct sll_element_ {
+    sll_element_ *next;
+    void *data;
+} sll_element_t;
+ 
+typedef struct sll_header_ {
+    sll_element_t *head;
+    sll_element_t *tail;
+    uint count; 
+} sll_header_t;
+
+/*************************************************************************************************
+ * 10.2-1: Implement dynamic-set operation INSERT and DELETE on a singly linked list in O(1) time
+ *************************************************************************************************
+ */
+sll_element_t *
+sll_insert_at_end (sll_header_t *list, sll_element_t *element)
+{
+    if (list->head == NULL) {
+        /* 
+         * Insert into an empty list
+         */
+        list->head = list->tail = element;
+    } else {
+        list->tail->next = element;
+        list->tail = element;
+    }
+    element->next = NULL;
+    list->count++;
+    return (element);
+}
+
+/*
+ * Can only be done if element is not the tail
+ */
+sll_element_t *
+sll_delete (sll_header_t *list, sll_element_t *element)
+{
+    sll_element_t *next_element;
+    sll_element_t tmp_element;
+    
+    if (list->tail == NULL || element->next == NULL) {
+        return (NULL);
+    }
+    
+    next_element = element->next;
+    memcpy(&tmp_element, element, sizeof(sll_element_t));
+    memcpy(element, next_element, sizeof(sll_element_t));
+    memcpy(next_element, &tmp_element, sizeof(sll_element_t));
+    
+    if (list->tail == next_element) {
+        list->tail = element;
+    }
+    list->count--;
+    return (next_element);
+}
+
+
+/***********************************************************
+ * 10.2-2: Implement a stack using a singly linked list L. 
+ * The operations PUSH and POP should still take O(1) time.
+ ***********************************************************
+ */
+sll_element_t *
+sll_insert_at_front (sll_header_t *list, sll_element_t *element)
+{
+    /*
+     * Insert in the front
+     */
+     if (list->head == NULL) {
+         list->head = list->tail = element;
+     } else {
+         element->next = list->head;
+         list->head = element;
+     }
+     list->count++;
+     return (element);
+}
+
+sll_element_t *
+sll_delete_at_front (sll_header_t *list)
+{
+    sll_element_t *element;
+    
+    /*
+     * Pop the head
+     */
+    if (list->head == NULL) {
+        return (NULL);
+    }
+    element = list->head;
+    list->head = element->next;
+    list->count--;
+    return (element)
+}
+
+sll_element_t *
+sll_push (sll_header_t *list, sll_element_t *element)
+{
+    return (sll_insert_at_front(list, element));
+}
+
+sll_element_t *
+sll_pop (sll_header_t *list)
+{
+    return (sll_delete_at_front(list));
+}
+
+
+/***********************************************************
+ * 10.2-3: Implement a queue using a singly linked list L. 
+ * The operations ENQUEUE and DEQUEUE should still take O(1) time.
+ ***********************************************************
+ */
+sll_element_t *
+sll_enqueue (sll_header_t *list, sll_element_t *element)
+{
+   return (sll_insert_at_end(list, element));
+}
+
+sll_element_t *
+sll_dequeue (sll_header_t *list) 
+{
+    return (sll_delete_at_front(list));
+}
