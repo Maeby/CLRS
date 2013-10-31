@@ -7,7 +7,7 @@
  *
  * Notes:
  * Show how to implement a queue using two stacks. Analyze the running time of the queue operations.
- * Keep 2 stacks, let's call them inbox and outbox.
+ * Keep 2 stacks, let's call them inbox and outbox. Worst case complexity is O(n).
  *
  * Queue: Push the new element onto inbox
  *
@@ -16,7 +16,7 @@
  */
  
 typedef struct stack_ {
-    uint top;
+    int top;
 } stack_t;
 
 #define QUEUE_SIZE 10
@@ -33,13 +33,15 @@ ENQUEUE (int x)
         printf("\nQueue Overflow");
         return;
     }
-    array[stack_input.top] = x;
     stack_input.top++;
+    array[stack_input.top] = x;
 }
 
 int 
 DEQUEUE (void)
 {
+    int x;
+    
     if (stack_output.top == -1 && stack_input.top == -1) {
         printf("\nQueue underflow");
         return (0);
@@ -49,10 +51,12 @@ DEQUEUE (void)
      */
     if (stack_output.top == -1) {
         while (stack_input.top >= 0) {
-             stack_input.top--;
-             array_output[stack_output.top] = array_input[stack_input.top];
-             stack_output.top++;
+            stack_output.top++;
+            array_output[stack_output.top] = array_input[stack_input.top];
+            stack_input.top--; 
         }
     }
-    return (array_output[stack_output.top - 1]);
+    x = array_output[stack_output.top];
+    stack_output.top--; 
+    return (x);
 }
