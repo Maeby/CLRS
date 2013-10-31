@@ -15,8 +15,8 @@
  */
  
 typedef struct two_stack_ {
-   uint top_1;
-   uint top_2;
+   int top_1;
+   int top_2;
 } two_stack;
 
 #define STACK_SIZE 10;
@@ -32,8 +32,8 @@ two_stack_initialize (uint *A)
     for (i = 0; i < STACK_SIZE; i++) {
         A[i] = 0;
     }
-    S.top_1 = 1;
-    S.top_2 = n;
+    S.top_1 = -1;
+    S.top_2 = STACK_SIZE;
 }
 
 boolean 
@@ -58,13 +58,18 @@ two_stack_POP (uint *A, boolean first_stack)
 {
     uint x;
     
-    /*
-     * Need to add check for underflow
-     */
     if (first_stack) {
+        if (S.top_1 == 0) {
+            printf("\nStack underflow");
+            return (0);
+        }
         x = A[S.top_1];
         S.top_1--;
     } else {
+        if (S.top_2 == STACK_SIZE) {
+            printf("\nStack underflow");
+            return (0);
+        }
         x = A[S.top_2];
         S.top_2++;
     }
