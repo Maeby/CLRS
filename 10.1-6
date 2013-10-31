@@ -29,7 +29,7 @@ static int array_output[QUEUE_SIZE];
 void
 ENQUEUE (int x)
 {
-    if (stack_input.top == QUEUE_SIZE) {
+    if (stack_input.top == QUEUE_SIZE - 1) {
         printf("\nQueue Overflow");
         return;
     }
@@ -40,15 +40,15 @@ ENQUEUE (int x)
 int 
 DEQUEUE (void)
 {
-    if (stack_output.top == 0 && stack_input.top == 0) {
+    if (stack_output.top == -1 && stack_input.top == -1) {
         printf("\nQueue underflow");
         return (0);
     }
     /*
      * If output stack is empty, pop each element from inbox and push it onto outbox
      */
-    if (stack_output.top == 0) {
-        while (stack_input.top > 0) {
+    if (stack_output.top == -1) {
+        while (stack_input.top >= 0) {
              stack_input.top--;
              array_output[stack_output.top] = array_input[stack_input.top];
              stack_output.top++;
