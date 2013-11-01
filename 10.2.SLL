@@ -8,7 +8,7 @@
 
 typedef struct sll_element_ {
     sll_element_ *next;
-    void *data;
+    int data;
 } sll_element_t;
  
 typedef struct sll_header_ {
@@ -130,4 +130,73 @@ sll_element_t *
 sll_dequeue (sll_header_t *list) 
 {
     return (sll_delete_at_front(list));
+}
+
+
+/***************************************************************
+ * 10.2-6: Write a procedure that merges two singly linked list
+ ***************************************************************
+ */
+sll_element_t *
+merge_two_sll_wo_sentinels (sll_header_t *merged_list, sll_header_t *sll_1, sll_header_t *sll_2)
+{
+    int i = 0, j = 0;
+    sll_element_t *element_1, *element_2, *element;
+    sll_header_t *sll;
+
+    element_1 = sll_1->head;
+    element_2 = sll_2->head;
+    
+    while (element_1 && element_2) {
+        element = (sll_element_t *)malloc(sizeof(sll_element_t));
+        if (element_1->value <= element_2->value) {
+            element->value = element_1->value;
+            element_1 = element_1->next;
+            free(sll_delete_at_front(sll_1));
+        } else {
+            element->value = element_2->value;
+            element_2 = element_2->next;
+            free(sll_delete_at_front(sll_2));
+        }
+        sll_insert_at_end(merged_list, element);
+    }
+    
+    if (element_1 == NULL) {
+        merged_list->tail->next = element_2;
+        sll = sll_2;
+    } else {
+        merged_list->tail->next = element_1;
+        sll = sll_1;
+    }
+    
+    merged_list->tail = sll->tail;
+    merged_list->count += sll->count;
+    sll->head = sll->tail = NULL;
+    sll->count = 0;
+    return (merged_list->head);
+}
+
+
+/********************************************************************
+ * 10.2-7: Give a O(n)-time non-recursive procedure that reverses a
+ * singly linked list with n elements. The procedure should take no
+ * more than constant storage beyond that needed for the list itself.
+ *********************************************************************
+ */
+sll_element_t *
+reverse_sll (sll_header_t *sll)
+{
+    sll_element_t *current, *prev, *next;
+    
+    sll->tail = sll->head;
+    current = sll->head;
+    prev = NULL;
+    while (current) {
+        next = current->next;
+        current->next = prev;
+        prev = current;
+        current = next;
+    }
+
+    sll_head = prev;
 }
