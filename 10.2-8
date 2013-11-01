@@ -1,0 +1,90 @@
+/*
+ * Author: Maeby Peng, MaebyPeng@gmail.com
+ * Date: Nov 11, 2013
+ * Update: Nov 11, 2013
+ * Problem: CRLS 10.2-8
+ * Difficulty: Easy
+ *
+ * Note:
+ * Explain how to implement doubly linked lists using only one pointer 
+ * value np[x] per item instead of the usual two (next and prev). Assume 
+ * that all pointer values can be interpreted as k-bit integers, and define 
+ * np[x] to be np[x] = next[x] XOR prev[x], the k-bit "exclusive-or" 
+ * of next[x] and prev[x]. (The value NIL is represented by 0.) Be sure to 
+ * describe what information is needed to access the head of the list. Show 
+ * how to implement the SEARCH, INSERT, and DELETE operations on such a list. 
+ * Also show how to reverse such a list in O(1) time.
+ */
+ 
+typedef struct sll_element_ {
+    int data;
+    sll_element_ *ptr;
+} sll_element_t;
+
+typedef struct sll_header_ {
+    sll_element_t *head;
+    sll_element_t *tail;
+} sll_header_t;
+
+#define XOR(x, y) (sll_element_t *)((uint)x) ^ ((uint)y)
+
+sll_element_t *
+sll_SEARCH (sll_header_t *sll, int x, sll_element_t **prev_ptr, sll_element_t **next_ptr)
+{
+    sll_element_t *element;
+    sll_element_t *prev = NULL, *next = NULL;
+    
+    element = sll->head;
+    while (element) {
+        next = XOR(element->ptr, prev);
+        if (element->data == x) {
+            *prev_ptr = prev;
+            *next_ptr = next;
+            return (element);
+        }
+        prev = element;
+        element = next;
+    }
+    return (NULL);
+}
+
+sll_element_t *
+sll_INSERT (sll_header_t *sll, sll_element_t *element)
+{
+    sll_element_t *head = sll->head;
+    
+    head->ptr ^= int(element);
+    element->ptr = int(head);
+    if (sll->head == NULL) {
+        sll->tail = element;
+    }
+    sll->head = element;
+    return (element);
+}
+
+sll_element_t *
+sll_DELETE (sll_header_t *sll, sll_element_t *node)
+{
+    sll_element_t *prev = NULL, *next = NULL;
+    sll_element_t *element;
+    
+    /*
+     * the previous and next nodes are needed to delete
+     */
+    element = sll_SEARCH(sll, node->data, &prev, &next);     
+    if (element == NULL || element != node) {
+        return (NULL);
+    }
+    
+    if (prev) 
+        prev->ptr = (uint)(prev->ptr) ^ (uint)element ^ (uint)(element->ptr) & (uint)prev;
+    } else {
+        sll->head = next;
+    }
+    if (next) {    
+        next->ptr = (uint)(next->ptr) ^ (uint)element ^ (uint)(element->ptr) & (uint)next;
+    } else {
+        sll->tail = prev;
+    }
+    return (element);
+}
