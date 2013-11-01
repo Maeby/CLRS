@@ -1,0 +1,31 @@
+/*
+ * 10.3-2: Write the procedures ALLOCATE-OBJECT and FREE-OBJECT for a homogeneous collection of 
+ * objects implemented by the single-array representation.
+ */
+
+#define OBJ_SIZE 10
+
+static uint array[OBJ_SIZE * 3]
+static uint free = 0;
+
+uint
+allocate_object ()
+{
+    uint index;
+    
+    if (!free) {
+        return (NULL);
+    }
+    
+    index = free;
+    free = array[index + 1];
+    return (index);
+}
+
+uint 
+free_object (uint index)
+{
+    array[index + 1] = free;
+    free = index;
+    return (index);
+}
