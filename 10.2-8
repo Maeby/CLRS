@@ -16,25 +16,25 @@
  * Also show how to reverse such a list in O(1) time.
  */
  
-typedef struct sll_element_ {
+typedef struct dll_element_ {
     int data;
-    sll_element_ *ptr;
-} sll_element_t;
+    dll_element_ *ptr;
+} dll_element_t;
 
-typedef struct sll_header_ {
-    sll_element_t *head;
-    sll_element_t *tail;
-} sll_header_t;
+typedef struct dll_header_ {
+    dll_element_t *head;
+    dll_element_t *tail;
+} dll_header_t;
 
-#define XOR(x, y) (sll_element_t *)((uint)x) ^ ((uint)y)
+#define XOR(x, y) (dll_element_t *)((uint)x) ^ ((uint)y)
 
-sll_element_t *
-sll_SEARCH (sll_header_t *sll, int x, sll_element_t **prev_ptr, sll_element_t **next_ptr)
+dll_element_t *
+dll_SEARCH (dll_header_t *dll, int x, dll_element_t **prev_ptr, dll_element_t **next_ptr)
 {
-    sll_element_t *element;
-    sll_element_t *prev = NULL, *next = NULL;
+    dll_element_t *element;
+    dll_element_t *prev = NULL, *next = NULL;
     
-    element = sll->head;
+    element = dll->head;
     while (element) {
         next = XOR(element->ptr, prev);
         if (element->data == x) {
@@ -48,30 +48,30 @@ sll_SEARCH (sll_header_t *sll, int x, sll_element_t **prev_ptr, sll_element_t **
     return (NULL);
 }
 
-sll_element_t *
-sll_INSERT (sll_header_t *sll, sll_element_t *element)
+dll_element_t *
+dll_INSERT (dll_header_t *dll, dll_element_t *element)
 {
-    sll_element_t *head = sll->head;
+    dll_element_t *head = dll->head;
     
     head->ptr ^= int(element);
     element->ptr = int(head);
-    if (sll->head == NULL) {
-        sll->tail = element;
+    if (dll->head == NULL) {
+        dll->tail = element;
     }
-    sll->head = element;
+    dll->head = element;
     return (element);
 }
 
-sll_element_t *
-sll_DELETE (sll_header_t *sll, sll_element_t *node)
+dll_element_t *
+dll_DELETE (dll_header_t *dll, dll_element_t *node)
 {
-    sll_element_t *prev = NULL, *next = NULL;
-    sll_element_t *element;
+    dll_element_t *prev = NULL, *next = NULL;
+    dll_element_t *element;
     
     /*
      * the previous and next nodes are needed to delete
      */
-    element = sll_SEARCH(sll, node->data, &prev, &next);     
+    element = dll_SEARCH(dll, node->data, &prev, &next);     
     if (element == NULL || element != node) {
         return (NULL);
     }
@@ -79,12 +79,25 @@ sll_DELETE (sll_header_t *sll, sll_element_t *node)
     if (prev) 
         prev->ptr = (uint)(prev->ptr) ^ (uint)element ^ (uint)(element->ptr) & (uint)prev;
     } else {
-        sll->head = next;
+        dll->head = next;
     }
     if (next) {    
         next->ptr = (uint)(next->ptr) ^ (uint)element ^ (uint)(element->ptr) & (uint)next;
     } else {
-        sll->tail = prev;
+        dll->tail = prev;
     }
     return (element);
+}
+
+/*
+ * To reverse the dll, only need to swap head and tail
+ */
+dll_element_t *
+dll_REVERSE (dll_header_t *sll)
+{
+    dll_element_t *element;
+    
+    element = dll->head;
+    dll->head = dll->tail;
+    dll->tail = element;
 }
