@@ -1,0 +1,179 @@
+/*
+ * Implement a mergeable heap using linked list.
+ * This is quite insane since it is so much easier to implement using
+ * array by index, anyway...
+ */
+
+#include <stdio.h>
+
+typedef struct node_ {
+    struct node_ *left;
+    struct node_ *right;
+    struct node_ *parent;
+    unsigned short key;
+} node_t;
+
+typedef struct link_ {
+    struct link_ *next;
+    node_t *node;
+} link_t;
+
+static link_t *
+link_create (node_t *node)
+{
+    link_t *link;
+
+    link = (link_t *)malloc(sizeof(link_t));
+    link->node = node;
+    link->next = NULL;
+    return (link);
+}
+
+static node_t *
+node_create (node_t *parent, unsigned short key)
+{
+    node_t *node;
+
+    node = (node_t *)malloc(sizeof(node_t));
+    node->key = key;
+    node->parent = parent;
+    node->left = node->right = NULL;
+    return (node);
+}
+
+link_t *
+node_insert (link_t *head, link_t **tail, unsigned short key)
+{
+    link_t *new_link, *current_link;
+    node_t *new_node, *current_node;
+    unsigned short tmp, insert = 1;
+
+    new_node = node_create(NULL, key);
+    new_link = link_create(new_node);
+
+    if (head == NULL) { //Empty link, create the root
+        *tail = new_link;
+        return(new_link);
+    }
+
+    current_link = head;
+    while (current_link) {
+        current_node = current_link->node;
+        if (current_node->left == NULL) { //Insert new node as the left child
+            current_node->left = new_node;
+            new_node->parent = current_node;
+            break;
+        } else if (current_node->right == NULL) {
+            current_node->right = new_node;
+            new_node->parent = current_node;
+            break;
+        }
+        current_link = current_link->next;
+    }
+
+    (*tail)->next = new_link;
+    *tail = new_link;
+    current_node = new_link->node;
+    while (current_node->parent && current_node->key > current_node->parent->key) { //Exchange the key value of keys
+        tmp = current_node->key;
+        current_node->key = current_node->parent->key;
+        current_node = current_node->parent;
+        current_node->key = tmp;
+    }
+    return (head);
+}
+
+static link_t *
+node_remove (link_t *head)
+{
+    link_t *current_link, *prev_link;
+    node_t *current_node, *next_node;
+    unsigned short largest;
+
+    prev_link = NULL;
+    current_link = head;
+
+    if (current_link->next == NULL) {
+        //Last link
+        free(current_link->node);
+        free(current_link);
+        return (NULL);
+    }
+
+    //Find the last link
+    while (current_link->next != NULL) {
+        prev_link = current_link;
+        current_link = current_link->next;
+    }
+
+    //Move the last node to the head
+    head->node->key = current_link->node->key;
+    //Remove the last link
+    prev_link->next = NULL;
+    if (current_link->node->parent->left == current_link->node) {
+        current_link->node->parent->left = NULL;
+    } else {
+        current_link->node->parent->right = NULL;
+    }
+    free(current_link->node);
+    free(current_link);
+
+    //Max heapify the new heap
+    current_node = head->node;
+    while (current_node) {
+        largest = current_node->key;
+        next_node = NULL;
+        if (current_node->left != NULL && current_node->left->key > largest) {
+            next_node = current_node->left;
+            largest = current_node->left->key;
+        }
+        if (current_node->right != NULL && current_node->right->key > largest) {
+            next_node = current_node->right;
+            largest = current_node->right->key;
+        }
+
+        if (next_node) {
+            next_node->key = current_node->key;
+            current_node->key = largest;
+            current_node = next_node;
+        } else {
+            break;
+        }
+    }
+    return (head);
+}
+
+static void
+print_heap (link_t *head)
+{
+    link_t *link = head;
+    node_t *node;
+
+    while (link) {
+        node = link->node;
+        printf("{%u, %u, %u, %u}", node->key, node->left ? node->left->key : 0,
+               node->right ? node->right->key : 0,
+               node->parent ? node->parent->key : 0);
+        link = link->next;
+    }
+    printf("\n");
+}
+
+int
+main (void)
+{
+    unsigned short array[10] = {4, 1, 3, 2, 16, 9, 10, 14, 8, 7};
+    unsigned short i;
+    link_t *head = NULL, *tail = NULL;
+
+    for (i = 0; i < 10; i++) {
+        head = node_insert(head, &tail, array[i]);
+        print_heap(head);
+    }
+
+    while (head != NULL) {
+        print_heap(head);
+        head = node_remove(head);
+    }
+
+}
